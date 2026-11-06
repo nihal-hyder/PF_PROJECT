@@ -6,6 +6,7 @@ SPECIAL_CHARACTER = [
     ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'
 ]
 UPPER_CASE_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+LOWER_CASE_LETTERS = 'abcdefghijklmnopqrstuvwxyz'
 DIGITS = '0123456789'
 
 
@@ -23,8 +24,28 @@ def check_password_strenght(password):
         return False
 
 
-def generating_strong_password():
-    pass
+def generating_strong_password(length=12):
+    if length < 8:
+        length = 8
+        
+    password_pool = [
+        random.choice(SPECIAL_CHARACTER),
+        random.choice(UPPER_CASE_LETTERS),
+        random.choice(DIGITS),
+        random.choice(LOWER_CASE_LETTERS)
+    ]
+    
+    all_characters = SPECIAL_CHARACTER + list(UPPER_CASE_LETTERS) + list(LOWER_CASE_LETTERS) + list(DIGITS)
+    
+    remaining_length = length - len(password_pool)
+    password_pool += random.choices(all_characters, k=remaining_length)
+    
+    random.shuffle(password_pool)
+    
+    strong_password = ''.join(password_pool)
+    return strong_password
+
+
 
 def login():
     username = input("enter your username here: ")
@@ -64,16 +85,17 @@ def checking_username(username):
 
             return False
 
-def register_new_user(username,password):
-
+def register_new_user():
+    username = input("enter your username here: ")
+    print(f"suggest password is {generating_strong_password()}")
+    password = input("enter your password here: ")
     
         
-        if checking_username(username) :
-            if check_password_strenght(password) :
-                with open("user.txt", "a") as f :
-                    f.write(f"{username},{password}\n")
-                print(f"user {username} is succesfully saved! ")
-            else:
+    if checking_username(username) and check_password_strenght(password) :
+            with open("user.txt", "a") as f :
+                f.write(f"{username},{password}\n")
+            print(f"user {username} is succesfully saved! ")
+    else:
                 print("soory password is not enough strong")
         
 
@@ -83,9 +105,11 @@ def view_security_report():
 
 def show_failed_login():
     pass
-username = "nihalhydershah"
-password =  "#Nihalhyder1212"
+# username = "nihalhydershah"
+# password =  "#Nihalhyder1212"
 
-# register_new_user(username,password)
+# # register_new_user(username,password)
 
-login()
+# login()
+
+register_new_user()
