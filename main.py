@@ -26,8 +26,22 @@ def check_password_strenght(password):
 def generating_strong_password():
     pass
 
-def login(username, password):
-     
+def login():
+    username = input("enter your username here: ")
+    password = input("enter your password here: ")
+    if username and password :
+        with open("user.txt" ,"r") as f:
+           for line in f:
+            content = line.strip().split(',')
+            if content[0] == username and content[1] == password:
+                    print("login succesfull !")
+                    return True
+            else:
+                print("username or password is wrong !")
+                return False
+    else:
+        print("enter an username and password")
+        return False
     pass
 
 
@@ -72,7 +86,6 @@ def show_failed_login():
 username = "nihalhydershah"
 password =  "#Nihalhyder1212"
 
-# password_test = "#Nihalhyder1212"
-# check_password_strenght(password_test)
+# register_new_user(username,password)
 
-register_new_user(username,password)
+login()
