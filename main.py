@@ -10,7 +10,6 @@ LOWER_CASE_LETTERS = 'abcdefghijklmnopqrstuvwxyz'
 DIGITS = '0123456789'
 MIN_LENGTH = 8
 MAX_ATTEMPTS = 3
-MAX_FAILED = 3
 USERS_FILE = "user.txt"
 LOG_FILE = "log.txt"
 
@@ -20,8 +19,7 @@ def welcome_interface():
     print(" 1. Register a new user")
     print(" 2. Login")
     print(" 3. Generate a strong password")
-    print(" 4. View security report")
-    print(" 5. Exit")
+    print(" 4. Exit")
     
 
 
@@ -237,109 +235,12 @@ def password_generator_menu():
     print(f"strength: {rating} ({score}/5)")
 
 
-def load_log():
-    records = []
-    try:
-        with open(LOG_FILE, "r") as file:
-            for line in file:
-                line = line.strip()
-                if line == "":
-                    continue
-                parts = line.split(",")
-                if len(parts) == 2:
-                    records.append((parts[0], parts[1]))
-    except FileNotFoundError:
-        print("No log file found yet. Try logging in first.")
-    return records
-
-
-def show_report():
-    print("\n========== SECURITY REPORT ==========")
-
-    records = load_log()
-    if len(records) == 0:
-        print("No login data to report.")
-        return
-
-    failed = {}
-    success = {}
-    all_names = set()
-
-    for name, result in records:
-        all_names.add(name)
-        if result == "FAILED":
-            failed[name] = failed.get(name, 0) + 1
-        else:
-            success[name] = success.get(name, 0) + 1
-
-    table = []
-    for name in sorted(all_names):
-        f = failed.get(name, 0)
-        s = success.get(name, 0)
-        total = f + s
-        percent = f / total * 100
-
-        if f >= MAX_FAILED:
-            status = "SUSPICIOUS"
-        else:
-            status = "OK"
-
-        table.append([name, s, f, total, f"{percent:.1f}%", status])
-
-    headers = ["User", "Success", "Failed", "Total", "Fail %", "Status"]
-    for h in headers:
-        print(f"{h:<12}", end="")
-    print()
-    print("-" * 72)
-
-    for row in table:
-        for item in row:
-            print(f"{str(item):<12}", end="")
-        print()
-
-    total_attempts = len(records)
-    total_failed = 0
-    for name in failed:
-        total_failed += failed[name]
-
-    print("\nTotal attempts :", total_attempts)
-    print("Total failed   :", total_failed)
-    print(f"Failure rate   : {total_failed / total_attempts * 100:.1f}%")
-
-    pairs = []
-    for name in failed:
-        pairs.append((failed[name], name))
-    pairs.sort(reverse=True)
-
-    if len(pairs) > 0:
-        print("\nTop targeted users:")
-        rank = 1
-        for count, name in pairs[:3]:
-            print(f"  {rank}. {name} - {count} failed attempt(s)")
-            rank += 1
-
-    failed_names = set(failed.keys())
-    success_names = set(success.keys())
-    only_failed = failed_names - success_names
-
-    if len(only_failed) > 0:
-        print("\nNever logged in successfully (possible guessing attack):")
-        for name in sorted(only_failed):
-            print("   -", name)
-
-    flagged = 0
-    for row in table:
-        if row[5] == "SUSPICIOUS":
-            flagged += 1
-    print(f"\nUsers flagged as SUSPICIOUS (>= {MAX_FAILED} failures): {flagged}")
-
-
 def main():
     try:
         while True:
             welcome_interface()
             try:
-                choice = int(input("Choose an option (1-5): "))
+                choice = int(input("Choose an option (1-4): "))
             except ValueError:
                 print("please enter a number")
                 continue
@@ -351,11 +252,9 @@ def main():
             elif choice == 3:
                 password_generator_menu()
             elif choice == 4:
-                show_report()
-            elif choice == 5:
                 break
             else:
-                print("please choose a number from 1 to 5")
+                print("please choose a number from 1 to 4")
     finally:
         print("all data is saved. goodbye!")
 
